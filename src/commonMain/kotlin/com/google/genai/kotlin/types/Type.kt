@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class Type(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Not specified, should not be used. */

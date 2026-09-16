@@ -28,6 +28,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class TuningSpeed(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** The default / unset value. For Veo 3.0 models, this defaults to FAST. */

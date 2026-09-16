@@ -28,6 +28,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class Behavior(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** This value is unspecified. */

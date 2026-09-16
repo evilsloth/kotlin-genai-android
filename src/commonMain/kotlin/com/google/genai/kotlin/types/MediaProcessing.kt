@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class MediaProcessing(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Default. Uses model-specific processing */

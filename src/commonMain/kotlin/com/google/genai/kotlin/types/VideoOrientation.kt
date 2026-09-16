@@ -27,6 +27,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class VideoOrientation(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Unspecified video orientation. Defaults to landscape. */

@@ -29,6 +29,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class FinishReason(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** The finish reason is unspecified. */

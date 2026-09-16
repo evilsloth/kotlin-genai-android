@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class Language(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Unspecified language. This value should not be used. */

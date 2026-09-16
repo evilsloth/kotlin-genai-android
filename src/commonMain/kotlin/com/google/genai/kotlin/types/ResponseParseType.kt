@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class ResponseParseType(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Default value. Fallback to IDENTITY */

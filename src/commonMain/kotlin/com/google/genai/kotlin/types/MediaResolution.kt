@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class MediaResolution(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Media resolution has not been set */

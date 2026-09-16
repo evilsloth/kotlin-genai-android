@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class SafetyPolicy(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Unspecified safety policy. */

@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class ToolType(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Unspecified tool type. */

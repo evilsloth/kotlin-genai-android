@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class AspectRatio(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Default value. This value is unused. */

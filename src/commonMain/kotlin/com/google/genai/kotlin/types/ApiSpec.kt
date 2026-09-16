@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class ApiSpec(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Unspecified API spec. This value should not be used. */

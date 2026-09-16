@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class FunctionCallingConfigMode(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Unspecified function calling mode. This value should not be used. */

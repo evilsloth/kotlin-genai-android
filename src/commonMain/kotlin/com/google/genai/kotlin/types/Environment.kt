@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class Environment(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Defaults to browser. */

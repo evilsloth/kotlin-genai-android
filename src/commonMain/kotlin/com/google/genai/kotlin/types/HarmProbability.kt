@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class HarmProbability(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** The harm probability is unspecified. */

@@ -30,6 +30,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class ProminentPeople(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /**

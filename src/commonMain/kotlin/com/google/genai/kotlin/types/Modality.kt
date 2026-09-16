@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class Modality(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** The modality is unspecified. */

@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class VoiceActivityType(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** The default is VOICE_ACTIVITY_TYPE_UNSPECIFIED. */

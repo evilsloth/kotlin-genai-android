@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class VadSignalType(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** The default is VAD_SIGNAL_TYPE_UNSPECIFIED. */

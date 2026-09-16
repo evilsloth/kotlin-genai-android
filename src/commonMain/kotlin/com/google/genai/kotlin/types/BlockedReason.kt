@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class BlockedReason(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** The blocked reason is unspecified. */

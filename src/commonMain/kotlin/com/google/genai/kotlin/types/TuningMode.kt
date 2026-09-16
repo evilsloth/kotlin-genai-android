@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class TuningMode(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Tuning mode is unspecified. */

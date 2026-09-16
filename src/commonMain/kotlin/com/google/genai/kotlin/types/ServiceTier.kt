@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class ServiceTier(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Default service tier, which is standard. */

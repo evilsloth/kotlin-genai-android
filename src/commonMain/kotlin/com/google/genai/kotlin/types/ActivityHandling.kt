@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class ActivityHandling(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** If unspecified, the default behavior is `START_OF_ACTIVITY_INTERRUPTS`. */

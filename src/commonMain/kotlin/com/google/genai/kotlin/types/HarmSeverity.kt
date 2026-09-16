@@ -27,6 +27,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class HarmSeverity(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** The harm severity is unspecified. */

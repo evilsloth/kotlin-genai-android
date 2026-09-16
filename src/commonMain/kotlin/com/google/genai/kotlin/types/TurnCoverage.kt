@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class TurnCoverage(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** If unspecified, the default behavior is `TURN_INCLUDES_ONLY_ACTIVITY`. */

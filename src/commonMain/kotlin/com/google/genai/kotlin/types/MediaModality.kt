@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class MediaModality(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** When a modality is not specified, it is treated as `TEXT`. */

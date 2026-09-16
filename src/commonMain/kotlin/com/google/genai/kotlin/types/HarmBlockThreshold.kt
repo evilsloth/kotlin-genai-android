@@ -28,6 +28,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class HarmBlockThreshold(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** The harm block threshold is unspecified. */

@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class MatchOperation(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Default value. A user error will be returned if not set. */

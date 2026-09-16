@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class DynamicRetrievalConfigMode(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Always trigger retrieval. */

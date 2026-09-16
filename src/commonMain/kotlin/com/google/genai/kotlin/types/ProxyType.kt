@@ -25,6 +25,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @JvmInline
 value class ProxyType(val value: String) {
+  override fun toString(): String = value
+
   companion object {
 
     /** Represents an HTTP proxy. */
