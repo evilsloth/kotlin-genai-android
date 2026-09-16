@@ -18,6 +18,7 @@ package com.google.genai.kotlin
 
 import com.google.genai.kotlin.types.HttpOptions
 import com.google.genai.kotlin.types.HttpRetryOptions
+import com.google.genai.kotlin.types.ProxyOptions
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
@@ -73,8 +74,17 @@ internal class ApiClient(
   internal val credentials: GoogleCredentials? = null,
   internal val enterprise: Boolean = false,
   internal val httpOptions: HttpOptions? = null,
-  internal val engine: HttpClientEngine = getDefaultEngine(),
+  engine: HttpClientEngine? = null,
+  proxyOptions: ProxyOptions? = null,
 ) : AutoCloseable {
+
+  // Ktor does not take ownership of an engine handed to HttpClient(engine), so closing the clients
+  // leaves it running -- and OkHttp's dispatcher threads are non-daemon, holding the JVM open for
+  // their 60s idle timeout. We close the engine ourselves, but only the one we created: an engine
+  // passed in belongs to the caller and may outlive this client.
+  private val ownsEngine = engine == null
+
+  internal val httpEngine: HttpClientEngine = engine ?: getDefaultEngine(proxyOptions)
 
   @Suppress("OPT_IN_USAGE")
   private val json = Json {
@@ -108,7 +118,7 @@ internal class ApiClient(
   }
 
   private val client =
-    HttpClient(engine) {
+    HttpClient(httpEngine) {
       defaultRequest { contentType(ContentType.Application.Json) }
       install(HttpTimeout) {
         requestTimeoutMillis = Long.MAX_VALUE
@@ -118,7 +128,7 @@ internal class ApiClient(
     }
 
   private val webSocketClient =
-    HttpClient(engine) {
+    HttpClient(httpEngine) {
       install(WebSockets)
       install(HttpTimeout) {
         requestTimeoutMillis = Long.MAX_VALUE
@@ -430,6 +440,9 @@ internal class ApiClient(
   override fun close() {
     client.close()
     webSocketClient.close()
+    if (ownsEngine) {
+      httpEngine.close()
+    }
   }
 }
 

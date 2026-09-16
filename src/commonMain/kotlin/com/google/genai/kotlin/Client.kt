@@ -172,10 +172,9 @@ internal constructor(
         credentials ?: getDefaultCredentials()
       }
 
-    val resolvedEngine =
-      engine
-        ?: clientOptions?.customHttpClient
-        ?: getDefaultEngine(proxyOptions = clientOptions?.proxyOptions)
+    // Left null when the caller supplied nothing, so ApiClient creates the engine and owns closing
+    // it. An engine we were handed stays the caller's to close.
+    val suppliedEngine = engine ?: clientOptions?.customHttpClient
 
     httpClient =
       ApiClient(
@@ -185,7 +184,8 @@ internal constructor(
         credentials = resolvedCredentials,
         enterprise = useEnterprise,
         httpOptions = httpOptions,
-        engine = resolvedEngine,
+        engine = suppliedEngine,
+        proxyOptions = clientOptions?.proxyOptions,
       )
 
     this.apiKey = resolvedApiKey

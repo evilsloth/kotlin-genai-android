@@ -339,7 +339,7 @@ class ClientTest {
 
     assertNotNull(client)
     assertEquals(API_KEY, client.apiKey)
-    assertEquals(customEngine, client.httpClient.engine)
+    assertEquals(customEngine, client.httpClient.httpEngine)
     assertEquals(customEngine, client.clientOptions?.customHttpClient)
   }
 
@@ -357,6 +357,6 @@ class ClientTest {
       Client(apiKey = API_KEY, clientOptions = clientOptions, environment = mockEnvironment)
 
     assertNotNull(client)
-    assertEquals(customEngine, client.httpClient.engine)
+    assertEquals(customEngine, client.httpClient.httpEngine)
   }
 }
