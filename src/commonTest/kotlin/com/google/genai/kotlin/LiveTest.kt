@@ -31,10 +31,13 @@ import com.google.genai.kotlin.types.Tool
 import com.google.genai.kotlin.types.Type
 import java.io.EOFException
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonPrimitive
@@ -243,6 +246,37 @@ class LiveTest : BaseTestServer() {
       assertTrue(isAudioReceived, "Expected to receive audio inlineData")
       assertTrue(turnsCompleted == 2, "Expected 2 turns to complete")
     }
+  }
+
+  // Both of these used to hang until the runTest timeout. receive() caught the AbortFlowException
+  // that first() throws to stop a flow early -- and every other collector exception -- then
+  // awaited a closeReason that never completes while the socket is open. They replay the
+  // testTextInputSimple recording because what is under test is how receive() ends, not what the
+  // server sends.
+  @Test
+  fun testReceiveFirstDoesNotHang() = runTest {
+    val client = createClient(enterprise = false, testName = "LiveTest.testTextInputSimple.mldev")
+    val session = client.live.connect(GEMINI_MODEL_NAME)
+    session.sendRealtimeInput(text = "Hello what should we talk about?")
+
+    assertNotNull(session.receive().first(), "first() should return rather than hang")
+
+    session.closeSession()
+  }
+
+  @Test
+  fun testReceivePropagatesCollectorException() = runTest {
+    val client = createClient(enterprise = false, testName = "LiveTest.testTextInputSimple.mldev")
+    val session = client.live.connect(GEMINI_MODEL_NAME)
+    session.sendRealtimeInput(text = "Hello what should we talk about?")
+
+    val thrown =
+      assertFailsWith<IllegalStateException> {
+        session.receive().collect { throw IllegalStateException("from the collector") }
+      }
+    assertEquals("from the collector", thrown.message)
+
+    session.closeSession()
   }
 
   @Test

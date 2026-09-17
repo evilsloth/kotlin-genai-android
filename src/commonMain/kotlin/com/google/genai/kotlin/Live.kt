@@ -34,6 +34,7 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readBytes
 import io.ktor.websocket.readText
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -104,39 +105,43 @@ internal constructor(
    * @throws GenAiApiException if the connection is closed abnormally.
    */
   fun receive(): Flow<LiveServerMessage> = flow {
-    try {
-      for (frame in session.incoming) {
-        val jsonStr =
-          when (frame) {
-            is Frame.Text -> frame.readText()
-            is Frame.Binary -> frame.readBytes().decodeToString()
-            else -> continue
-          }
-        val responseMap = Common.jsonStringToMap(jsonStr)
-        val convertedMap =
-          if (apiClient.enterprise) {
-            LiveConverters.liveServerMessageFromVertex(responseMap, null)
-          } else {
-            LiveConverters.liveServerMessageFromMldev(responseMap, null)
-          }
-        val message = Common.mapToDataClass<LiveServerMessage>(convertedMap)
-        emit(message)
-      }
-      val finalCloseReason = session.closeReason.await()
-      if (finalCloseReason != null && finalCloseReason.code != CloseReason.Codes.NORMAL.code) {
-        throw GenAiApiException(
-          finalCloseReason.code.toInt(),
-          "ConnectionClosed",
-          finalCloseReason.message,
-        )
-      }
-    } catch (e: Exception) {
-      val closeReason = session.closeReason.await()
-      if (closeReason != null && closeReason.code != CloseReason.Codes.NORMAL.code) {
-        throw GenAiApiException(closeReason.code.toInt(), "ConnectionClosed", closeReason.message)
-      }
-      throw e
+    // emit() stays outside the guard: an exception from the collector is not a connection
+    // failure, and awaiting closeReason while the socket is open never returns.
+    val frames = session.incoming.iterator()
+    while (true) {
+      val frame =
+        try {
+          if (!frames.hasNext()) break
+          frames.next()
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          throw abnormalCloseOrNull() ?: e
+        }
+
+      val jsonStr =
+        when (frame) {
+          is Frame.Text -> frame.readText()
+          is Frame.Binary -> frame.readBytes().decodeToString()
+          else -> continue
+        }
+      val responseMap = Common.jsonStringToMap(jsonStr)
+      val convertedMap =
+        if (apiClient.enterprise) {
+          LiveConverters.liveServerMessageFromVertex(responseMap, null)
+        } else {
+          LiveConverters.liveServerMessageFromMldev(responseMap, null)
+        }
+      emit(Common.mapToDataClass<LiveServerMessage>(convertedMap))
     }
+    abnormalCloseOrNull()?.let { throw it }
+  }
+
+  /** The exception describing an abnormal close, or null if the session closed normally. */
+  private suspend fun abnormalCloseOrNull(): GenAiApiException? {
+    val reason = session.closeReason.await() ?: return null
+    if (reason.code == CloseReason.Codes.NORMAL.code) return null
+    return GenAiApiException(reason.code.toInt(), "ConnectionClosed", reason.message)
   }
 
   /** Sends a generic [LiveClientMessage] to the server. */
