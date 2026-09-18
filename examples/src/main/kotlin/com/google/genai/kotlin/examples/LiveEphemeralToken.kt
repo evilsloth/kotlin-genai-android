@@ -94,6 +94,5 @@ object LiveEphemeralToken {
             }
         }
       }
-      kotlin.system.exitProcess(0)
     }
 }

@@ -61,7 +61,5 @@ object GetModel {
         println("Display Name: ${modelInfo.displayName}")
         println("Input Token Limit: ${modelInfo.inputTokenLimit}")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

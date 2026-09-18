@@ -116,7 +116,5 @@ object ChatWithAutomaticFunctionCalling {
           println("  ${content.role}: $parts")
         }
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

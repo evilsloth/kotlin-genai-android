@@ -104,7 +104,5 @@ object CachedContentOperations {
         client.caches.delete(cachedContent1.name!!)
         println("Deleted cached content: ${cachedContent1.name}")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

@@ -140,6 +140,5 @@ object BatchesOperations {
           }
         }
       }
-      kotlin.system.exitProcess(0)
     }
 }

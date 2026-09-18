@@ -59,7 +59,5 @@ object CountTokens {
 
         println("Total tokens: ${response.totalTokens}")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

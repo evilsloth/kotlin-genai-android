@@ -73,7 +73,5 @@ object ComputeTokens {
           println("Tokens: ${info.tokens?.map { it.decodeToString() }}")
         }
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

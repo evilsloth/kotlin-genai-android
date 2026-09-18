@@ -120,7 +120,5 @@ object RegisterFilesOperations {
           println("Deleted file successfully.")
         }
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

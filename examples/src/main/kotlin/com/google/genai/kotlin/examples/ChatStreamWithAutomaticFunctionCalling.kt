@@ -88,7 +88,5 @@ object ChatStreamWithAutomaticFunctionCalling {
           chat.getHistory().flatMap { it.parts.orEmpty() }.count { it.functionResponse != null }
         println("\nFunction results sent back for you: $answered")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

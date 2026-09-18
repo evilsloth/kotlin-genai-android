@@ -134,6 +134,5 @@ object LiveFunctionCalling {
             }
         }
       }
-      kotlin.system.exitProcess(0)
     }
 }

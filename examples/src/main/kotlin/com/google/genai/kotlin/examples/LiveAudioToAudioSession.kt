@@ -115,6 +115,5 @@ object LiveAudioToAudioSession {
             }
         }
       }
-      kotlin.system.exitProcess(0)
     }
 }

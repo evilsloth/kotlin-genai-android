@@ -74,8 +74,6 @@ object GenerateContentWithHttpOptions {
         // 4. Print the result
         println("Unary response:\n${response.text}")
       }
-
-      kotlin.system.exitProcess(0)
     }
   }
 }

@@ -78,7 +78,5 @@ object ProxyConfiguration {
           e.printStackTrace()
         }
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

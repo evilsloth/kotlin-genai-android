@@ -78,7 +78,5 @@ object CustomHttpClient {
           e.printStackTrace()
         }
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

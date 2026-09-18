@@ -72,7 +72,5 @@ object ListModels {
           )
         }
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

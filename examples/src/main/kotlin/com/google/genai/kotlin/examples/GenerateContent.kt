@@ -72,7 +72,5 @@ object GenerateContent {
         // 5. Print the result
         println("Unary response: ${response.text}")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

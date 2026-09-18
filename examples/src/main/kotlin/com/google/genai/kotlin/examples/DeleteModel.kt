@@ -61,7 +61,5 @@ object DeleteModel {
         client.models.delete(model = modelId)
         println("Tuned model successfully deleted.")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

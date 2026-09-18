@@ -130,7 +130,6 @@ object EmbedContent {
 
         printEmbeddingResponse(multimodalResponse)
       }
-      kotlin.system.exitProcess(0)
     }
 
   private fun printEmbeddingResponse(response: com.google.genai.kotlin.types.EmbedContentResponse) {

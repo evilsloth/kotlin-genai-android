@@ -80,7 +80,5 @@ object GenerateContentStream {
         }
         println() // End with a newline
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

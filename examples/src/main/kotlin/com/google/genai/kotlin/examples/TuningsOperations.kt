@@ -216,7 +216,5 @@ object TuningsOperations {
           )
         println("Reward Validation Score: ${rewardResponse.overallReward}")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

@@ -74,7 +74,5 @@ object Chat {
         // Two entries per exchange: the message and the response.
         println("\nHistory entries: ${chat.getHistory().size}")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

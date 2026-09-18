@@ -75,7 +75,5 @@ object ChatStream {
         // than one for the whole response.
         println("\nHistory entries: ${chat.getHistory().size}")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

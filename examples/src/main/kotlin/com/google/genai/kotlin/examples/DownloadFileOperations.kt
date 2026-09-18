@@ -75,7 +75,5 @@ object DownloadFileOperations {
           println("No generated files found with a downloadUri. Skipping download demonstration.")
         }
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

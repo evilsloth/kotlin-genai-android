@@ -81,7 +81,5 @@ object UpdateTunedModel {
         val updatedModel = client.models.update(model = modelId, config = config)
         println("Successfully updated model: ${updatedModel.name}")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }

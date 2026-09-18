@@ -81,7 +81,5 @@ object FilesOperations {
         client.files.delete(name = file.name!!)
         println("Deleted file: ${file.name}")
       }
-
-      kotlin.system.exitProcess(0)
     }
 }
