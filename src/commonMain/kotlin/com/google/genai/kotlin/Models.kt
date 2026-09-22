@@ -1537,8 +1537,12 @@ class Models internal constructor(internal val apiClient: ApiClient) {
       throw IllegalArgumentException("routingConfig parameter is not supported in Gemini API.")
     }
 
-    if (!Common.isZero(Common.getValueByPath(fromObject, arrayOf("labels")))) {
-      throw IllegalArgumentException("labels parameter is not supported in Gemini API.")
+    Common.getValueByPath(fromObject, arrayOf("labels"))?.let { node ->
+      Common.setValueByPath(
+        parentObject,
+        arrayOf("labels"),
+        Common.getValueByPath(fromObject, arrayOf("labels")),
+      )
     }
 
     Common.getValueByPath(fromObject, arrayOf("audioTranscriptionConfig"))?.let { node ->

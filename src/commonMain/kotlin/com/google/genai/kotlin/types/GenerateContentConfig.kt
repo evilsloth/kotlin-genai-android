@@ -196,7 +196,7 @@ data class GenerateContentConfig(
   /** Configuration for model router requests. */
   val routingConfig: GenerationConfigRoutingConfig? = null,
 
-  /** Labels with user-defined metadata to break down billed charges. */
+  /** Labels with user-defined metadata for the request. */
   val labels: Map<String, String>? = null,
 
   /** Optional. Configuration for audio transcription (speech recognition). */
