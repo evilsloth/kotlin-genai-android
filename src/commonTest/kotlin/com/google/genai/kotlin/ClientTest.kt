@@ -28,7 +28,9 @@ import io.mockk.mockk
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class ClientTest {
 
@@ -358,5 +360,49 @@ class ClientTest {
 
     assertNotNull(client)
     assertEquals(customEngine, client.httpClient.httpEngine)
+  }
+
+  // An exported-but-empty variable is routine in CI templates and Docker env_files. It used to
+  // resolve to "", which is non-null, so it suppressed both the GEMINI_API_KEY fallback and the
+  // ADC lookup and sent an empty key instead.
+  @Test
+  fun testEmptyGoogleApiKeyFallsBackToGeminiApiKey() {
+    clearEnv()
+    setEnv("GOOGLE_API_KEY", "")
+    setEnv("GEMINI_API_KEY", API_KEY)
+
+    val client = Client(environment = mockEnvironment)
+
+    assertEquals(API_KEY, client.apiKey)
+  }
+
+  @Test
+  fun testEmptyApiKeyDoesNotSuppressCredentials() {
+    clearEnv()
+    setEnv("GOOGLE_API_KEY", "")
+    setEnv("GOOGLE_CLOUD_PROJECT", PROJECT)
+    setEnv("GOOGLE_GENAI_USE_ENTERPRISE", "true")
+
+    val client = Client(credentials = MOCK_CREDENTIALS, environment = mockEnvironment)
+
+    assertNull(client.apiKey, "An empty GOOGLE_API_KEY must not resolve to a key")
+    assertEquals(PROJECT, client.project)
+  }
+
+  // Sweeps the remaining reads, so a call site that goes back to environment.get() directly is
+  // caught -- two paths disagreeing on what empty means is what caused this in the first place.
+  @Test
+  fun testEmptyEnvVarsAreTreatedAsUnset() {
+    clearEnv()
+    setEnv("GOOGLE_API_KEY", API_KEY)
+    setEnv("GOOGLE_CLOUD_PROJECT", "")
+    setEnv("GOOGLE_CLOUD_LOCATION", "")
+    setEnv("GOOGLE_GENAI_USE_ENTERPRISE", "")
+
+    val client = Client(environment = mockEnvironment)
+
+    assertNull(client.project)
+    assertNull(client.location)
+    assertFalse(client.enterprise)
   }
 }

@@ -97,12 +97,12 @@ internal constructor(
   internal val httpClient: ApiClient
 
   init {
-    val envEnterprise = environment.get("GOOGLE_GENAI_USE_ENTERPRISE")
-    val useEnterprise = enterprise ?: (envEnterprise?.equals("true", ignoreCase = true) ?: false)
+    val envEnterprise = env("GOOGLE_GENAI_USE_ENTERPRISE")
+    val useEnterprise = enterprise ?: envEnterprise?.equals("true", ignoreCase = true) ?: false
 
-    val envApiKey = environment.get("GOOGLE_API_KEY") ?: environment.get("GEMINI_API_KEY")
-    val envProject = environment.get("GOOGLE_CLOUD_PROJECT")
-    val envLocation = environment.get("GOOGLE_CLOUD_LOCATION")
+    val envApiKey = env("GOOGLE_API_KEY") ?: env("GEMINI_API_KEY")
+    val envProject = env("GOOGLE_CLOUD_PROJECT")
+    val envLocation = env("GOOGLE_CLOUD_LOCATION")
 
     var resolvedApiKey: String? = apiKey ?: envApiKey
     var resolvedProject: String? = project ?: envProject
@@ -113,11 +113,9 @@ internal constructor(
     val hasProject = project != null
     val hasLocation = location != null
 
-    val hasEnvApiKey =
-      environment.get("GOOGLE_API_KEY")?.isNotEmpty() == true ||
-        environment.get("GEMINI_API_KEY")?.isNotEmpty() == true
-    val hasEnvProject = environment.get("GOOGLE_CLOUD_PROJECT")?.isNotEmpty() == true
-    val hasEnvLocation = environment.get("GOOGLE_CLOUD_LOCATION")?.isNotEmpty() == true
+    val hasEnvApiKey = envApiKey != null
+    val hasEnvProject = envProject != null
+    val hasEnvLocation = envLocation != null
 
     if ((hasProject || hasLocation) && !useEnterprise) {
       throw IllegalArgumentException(
@@ -224,4 +222,7 @@ internal constructor(
   override fun close() {
     httpClient.close()
   }
+
+  /** Reads [name] from the environment, treating an empty value as unset. */
+  private fun env(name: String): String? = environment.get(name)?.takeIf { it.isNotEmpty() }
 }
