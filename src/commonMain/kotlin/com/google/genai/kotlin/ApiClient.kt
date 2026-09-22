@@ -53,6 +53,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 internal const val SDK_VERSION = "1.1.0" // {x-version-update:google-genai-kotlin:released}
 
@@ -239,8 +242,10 @@ internal class ApiClient(
               val line = channel.readUTF8Line() ?: break
               when {
                 line.isEmpty() && buffer.isNotEmpty() -> {
+                  val chunk = buffer.toString().trim()
+                  throwIfErrorChunk(chunk)
                   emitted = true
-                  emit(buffer.toString().trim())
+                  emit(chunk)
                   buffer.clear()
                 }
                 line.startsWith("data:") -> {
@@ -265,6 +270,19 @@ internal class ApiClient(
       delay(retryBackoffMillis(attempt, retryOptions!!))
       attempt++
     }
+  }
+
+  // The status line only describes the start of the response, so a failure partway through
+  // generation arrives inside a 200 stream, where nothing else would catch it.
+  private fun throwIfErrorChunk(chunk: String) {
+    val error =
+      try {
+        Json.parseToJsonElement(chunk).jsonObject["error"]?.jsonObject
+      } catch (_: IllegalArgumentException) {
+        null
+      } ?: return
+    val code = error["code"]?.jsonPrimitive?.intOrNull ?: 500
+    GenAiApiException.throwFromResponse(code, chunk)
   }
 
   /** Builds the request message for both unary and streaming requests. */

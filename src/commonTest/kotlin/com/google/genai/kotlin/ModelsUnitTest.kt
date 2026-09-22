@@ -28,6 +28,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -40,6 +41,9 @@ private const val RESPONSE =
   """{"candidates":[{"content":{"parts":[{"text":"ok"}],"role":"model"}}]}"""
 
 private const val STREAM_RESPONSE = "data: $RESPONSE\n\n"
+
+private const val ERROR_CHUNK =
+  """{"error":{"code":429,"message":"Quota exceeded","status":"RESOURCE_EXHAUSTED"}}"""
 
 /**
  * Tests for [Models] that assert what goes out on the wire, using a mock engine instead of the
@@ -101,5 +105,32 @@ class ModelsUnitTest {
     }
 
     assertEquals(listOf(null, "model"), sentRoles())
+  }
+
+  @Test
+  fun testGenerateContentStream_errorChunkThrows() = runTest {
+    client("data: $ERROR_CHUNK\n\n").use { client ->
+      val thrown =
+        assertFailsWith<ClientException> {
+          client.models
+            .generateContentStream(MODEL, Content(parts = listOf(Part(text = "Hello"))))
+            .collect {}
+        }
+      assertEquals(429, thrown.code)
+      assertEquals("RESOURCE_EXHAUSTED", thrown.status)
+    }
+  }
+
+  @Test
+  fun testGenerateContentStream_errorAfterAGoodChunkThrowsAndKeepsWhatArrived() = runTest {
+    client(STREAM_RESPONSE + "data: $ERROR_CHUNK\n\n").use { client ->
+      val seen = mutableListOf<String?>()
+      assertFailsWith<ClientException> {
+        client.models
+          .generateContentStream(MODEL, Content(parts = listOf(Part(text = "Hello"))))
+          .collect { seen.add(it.text) }
+      }
+      assertEquals(listOf<String?>("ok"), seen)
+    }
   }
 }
