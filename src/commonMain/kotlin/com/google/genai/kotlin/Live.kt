@@ -69,23 +69,29 @@ class Live internal constructor(private val apiClient: ApiClient) {
     val session = apiClient.openWebSocketSession(config?.httpOptions)
     val liveSession = LiveSession(session, apiClient)
 
-    // Perform initial setup
-    val configMap = config?.let { Common.dataClassToMap(it) } ?: mutableMapOf()
-    // Fallback to Audio modality if not specified by users. This aligns with the Python SDK
-    // behavior.
-    if (!configMap.containsKey("responseModalities")) {
-      configMap["responseModalities"] = listOf(Modality.AUDIO.value)
-    }
-    val messageMap =
-      mutableMapOf<String, Any?>("setup" to mutableMapOf("model" to transformedModel))
+    // Close the session if an exception is thrown during setup.
+    try {
+      // Perform initial setup
+      val configMap = config?.let { Common.dataClassToMap(it) } ?: mutableMapOf()
+      // Fallback to Audio modality if not specified by users. This aligns with the Python SDK
+      // behavior.
+      if (!configMap.containsKey("responseModalities")) {
+        configMap["responseModalities"] = listOf(Modality.AUDIO.value)
+      }
+      val messageMap =
+        mutableMapOf<String, Any?>("setup" to mutableMapOf("model" to transformedModel))
 
-    if (apiClient.enterprise) {
-      LiveConverters.liveConnectConfigToVertex(configMap, messageMap).let {}
-    } else {
-      LiveConverters.liveConnectConfigToMldev(configMap, messageMap).let {}
-    }
+      if (apiClient.enterprise) {
+        LiveConverters.liveConnectConfigToVertex(configMap, messageMap).let {}
+      } else {
+        LiveConverters.liveConnectConfigToMldev(configMap, messageMap).let {}
+      }
 
-    liveSession.send(Common.mapToDataClass<LiveClientMessage>(messageMap))
+      liveSession.send(Common.mapToDataClass<LiveClientMessage>(messageMap))
+    } catch (e: Throwable) {
+      liveSession.close()
+      throw e
+    }
 
     return liveSession
   }
