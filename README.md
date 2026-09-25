@@ -1,3 +1,33 @@
+# FORK
+
+Fork that reverts commit blocking direct Android usage.
+
+# FORK USAGE
+
+```
+./gradlew publishToMavenLocal
+```
+
+Then in client android application:
+
+```
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal() // <--- Add this
+    }
+}
+```
+
+and change the dependency version:
+
+```
+dependencies {
+    implementation("com.google.genai:google-genai-kotlin:1.2.0-ANDROID")
+}
+```
+
 # Google Gen AI Kotlin SDK
 
 --------
